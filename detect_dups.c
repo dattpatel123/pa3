@@ -246,7 +246,7 @@ void print_file_info() {
 }
 
 HardLinkGroup* createHardLinkGroup(unsigned long inode, File* file){
-    // creates target group entry depending given a target inode
+    // creates target group hardlink entry depending given a target inode
     HardLinkGroup *targetGroup = NULL;
     for (int i = 0; i < file->num_groups; i++) {
         if (file->groups[i].inode == inode) {
@@ -260,17 +260,14 @@ HardLinkGroup* createHardLinkGroup(unsigned long inode, File* file){
         targetGroup = &file->groups[file->num_groups];
         targetGroup->inode = inode;
         targetGroup->referenceCount = 0;  // No paths yet
-        targetGroup->paths = malloc(sizeof(char *) * 10);  // Allocate space for 10 paths initially
+        targetGroup->paths = malloc(sizeof(char *) * MAX_PATHS);  // Allocate space for 10 paths initially
         targetGroup->num_symlinks = 0;
-        targetGroup->symlinks = malloc(sizeof(SoftLinkGroup) * 20);
+        targetGroup->symlinks = malloc(sizeof(SoftLinkGroup) * MAX_GROUPS);
 
         // Increment the number of groups
         file->num_groups++;
     }
+    
     return targetGroup;
 }
 
-// // we have Files N unique
-// // Mulitple files with same content -> all go under file N, add hardlink
-// // mulitple file names/paths with same content/hardlink -> both under file N inode
-// //  

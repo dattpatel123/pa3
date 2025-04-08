@@ -1,18 +1,22 @@
 # Compiler
 CC = gcc
 
-# Source and output
+# Flags and libraries
+CFLAGS = -Wall -g
+LDFLAGS = -lcrypto
+
+# Source files and target
+SRC = detect_dups.c compute-md5.c
 TARGET = detect_dups
-SRC = detect_dups.c compute-md5.c -lcrypto -Wall -g
 
-# Default rule (build and run)
-all: build run
+# Default rule
+all: $(TARGET)
 
-# Build the executable
-build:
-	$(CC) -o $(TARGET) $(SRC)
+# Build rule
+$(TARGET): $(SRC)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRC) $(LDFLAGS)
 
-# Run the program with the directory
+# Optional run rule (for convenience, but not required by Gradescope)
 run:
 	./$(TARGET) test1
 
