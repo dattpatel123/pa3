@@ -14,7 +14,7 @@ build:
 
 # Run the program with the directory
 run:
-	./$(TARGET) /common/home/dp1296/cs214/pa3/create_tests/test1
+	./$(TARGET) test1
 
 # Clean rule
 clean:

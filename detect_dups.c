@@ -6,7 +6,7 @@ int ErrorNo = 0;
 File * filetable = NULL;
 int fileCount = 0;
 #define MAX_GROUPS 100 // Define a maximum number of groups
-
+#define MAX_PATHS 100 // define max paths
 # // Function prototypes
 void print_hardlink_group();
 void print_file_info();
@@ -39,21 +39,21 @@ int main(int argc, char *argv[]) {
 
 // render the file information invoked by nftw
 static int render_file_info(const char *fpath, const struct stat *sb, int tflag, struct FTW *ftwbuf) {
-    printf("\nInode: %lu, Name: %s\n", (unsigned long)sb->st_ino, fpath);
+    //printf("\nInode: %lu, Name: %s\n", (unsigned long)sb->st_ino, fpath);
     
     switch (tflag) {
     case FTW_F:
         //printf(" Regular File, Last Access: %s ", ctime(&sb->st_atime));
         if ( S_ISBLK(sb->st_mode) ) {
-        printf(" (Block Device)");
+        //printf(" (Block Device)");
         } else if ( S_ISCHR(sb->st_mode) ) {
-        printf(" (Character Device)");    
+        //printf(" (Character Device)");    
         }
         break;
     case FTW_D:
-        printf(" (Directory) \n");
-        printf("level=%02d, size=%07ld path=%s filename=%s\n",
-            ftwbuf->level, sb->st_size, fpath, fpath + ftwbuf->base);
+        //printf(" (Directory) \n");
+        //printf("level=%02d, size=%07ld path=%s filename=%s\n",
+            //ftwbuf->level, sb->st_size, fpath, fpath + ftwbuf->base);
         return 0;
         break; 
     case FTW_SL:
@@ -61,17 +61,17 @@ static int render_file_info(const char *fpath, const struct stat *sb, int tflag,
         // Symbolic link
         struct stat target_stat;
 
-        printf("Symlink:      %-30s → ", fpath);
+        //printf("Symlink:      %-30s → ", fpath);
 
         if (stat(fpath, &target_stat) == 0) {
-            printf("Target inode: %lu\n", target_stat.st_ino);
+            //printf("Target inode: %lu\n", target_stat.st_ino);
             if (S_ISDIR(target_stat.st_mode)) {
                 return 0;  // Don't hash directory symlinks
             }
         }
 
         else {
-            printf("Target inaccessible (%s)\n", strerror(errno));
+            //printf("Target inaccessible (%s)\n", strerror(errno));
         }
 
 
@@ -103,11 +103,11 @@ static int render_file_info(const char *fpath, const struct stat *sb, int tflag,
     }
     
 
-    printf("\tMD5 Hash: ");
-    for (int i = 0; i < md5_len; i++) {
-        printf("%02x", md5_value[i]);
-    }
-    printf("\n");
+    // printf("\tMD5 Hash: ");
+    // for (int i = 0; i < md5_len; i++) {
+    //     printf("%02x", md5_value[i]);
+    // }
+    // printf("\n");
 
     EVP_MD_CTX_free(mdctx); // don't create a leak!
     
@@ -145,7 +145,7 @@ static int render_file_info(const char *fpath, const struct stat *sb, int tflag,
         targetGroup->referenceCount++;
 
         // Optionally, print out the path that was added
-        printf("Added hardlink: %s \n", fpath);
+        //printf("Added hardlink: %s \n", fpath);
     }
     // softlink
     
@@ -177,13 +177,13 @@ static int render_file_info(const char *fpath, const struct stat *sb, int tflag,
             targetSoftGroup = &targetGroup->symlinks[targetGroup->num_symlinks];
             targetSoftGroup->inode = inode;
             targetSoftGroup->referenceCount = 0;  // No paths yet
-            targetSoftGroup->paths = malloc(sizeof(char *) * 10);  // Allocate space for 10 paths initially
+            targetSoftGroup->paths = malloc(sizeof(char *) * MAX_PATHS);  // Allocate space for 10 paths initially
             
 
             // Increment the number of symlink groups
             targetGroup->num_symlinks++;
         }
-        printf("\n\n%d\n\n", targetSoftGroup->referenceCount);
+        //printf("\n\n%d\n\n", targetSoftGroup->referenceCount);
         targetSoftGroup->paths[targetSoftGroup->referenceCount] = strdup(fpath);
         
         targetSoftGroup->referenceCount++;
