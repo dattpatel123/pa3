@@ -1,0 +1,83 @@
+
+# File Duplicate Detector
+
+This C program detects file duplicates using a file tree walk and considering the soft and hardlinks. It also uses a MD5 hash to hash the bytes of a file to further detect duplicates. It then nicely organzies unique files (whether by byte content or links) and lists them.
+
+
+
+## Usage
+
+To use this project, first clone repo. 
+
+Then, you need a folder on which to detect duplicates.
+
+You could either
+- Create run a test script (given in repo) to create test folders to run program on. 
+- Or you could also run the program on any directory of YOUR choice to detect duplicates.
+
+
+To create test folders, run:
+
+```bash
+  ./create_tests.sh
+```
+
+
+To run program:
+
+```bash
+  ./detect_dups <directory>
+```
+
+
+## Example Output
+
+```
+
+File 1:
+	MD5 Hash: 4fe82b0e520f6c2ff0e0c3e41f6b5c70
+	Hard Link (3): 1051764808
+			Paths:	test5/hard1.txt
+				test5/hardh1.txt
+				test5/file1.txt
+			Soft Link 1(1): 1052260146
+				Paths:	test5/soft12.txt
+			Soft Link 2(1): 1052260144
+				Paths:	test5/soft11.txt
+File 2:
+	MD5 Hash: f08957f87d4e8b4dc9de3e3f0b88dcee
+	Hard Link (1): 1052262542
+			Paths:	test5/file2.txt
+File 3:
+	MD5 Hash: cb1385d30851a1f01f8f36dbff04a2dd
+	Hard Link (3): 1052260148
+			Paths:	test5/test1/hard1.txt
+				test5/test1/file1.txt
+				test5/test1/hardh1.txt
+			Soft Link 1(2): 1052262546
+				Paths:	test5/test1/hards1.txt
+					test5/test1/soft1.txt
+	Hard Link (2): 1052249410
+			Paths:	test5/test1/file3.txt
+				test5/test1/hards3.txt
+File 4:
+	MD5 Hash: e7306b66ffc22d67326dec2122cb0832
+	Hard Link (3): 1052260150
+			Paths:	test5/test1/hardh2.txt
+				test5/test1/file2.txt
+				test5/test1/hard2.txt
+			Soft Link 1(2): 1052262548
+				Paths:	test5/test1/soft2.txt
+					test5/test1/hards2.txt
+File 5:
+	MD5 Hash: e711f198c6af98d1d13c99f030173add
+	Hard Link (2): 1052262552
+			Paths:	test5/file3.txt
+				test5/test2/file3.txt
+			Soft Link 1(1): 1052262560
+				Paths:	test5/file31s.txt
+			Soft Link 2(1): 1051764814
+				Paths:	test5/file32s.txt
+
+```
+
