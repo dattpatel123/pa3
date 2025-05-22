@@ -6,8 +6,8 @@ CFLAGS = -Wall -g
 LDFLAGS = -lcrypto
 
 # Source files and target
-SRC = detect_dups.c compute-md5.c
-TARGET = detect_dups
+SRC = detect_dups.c
+TARGET = detect_dups -Wall
 
 # Default rule
 all: $(TARGET)

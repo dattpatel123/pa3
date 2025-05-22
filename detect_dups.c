@@ -1,6 +1,6 @@
 // add any other includes in the detetc_dups.h file
 #include "detect_dups.h"
-
+#include "errno.h"
 // define any other global variable you may need over here
 int ErrorNo = 0;
 File * filetable = NULL;
@@ -15,15 +15,41 @@ HardLinkGroup* createHardLinkGroup();
 EVP_MD_CTX *mdctx;
 const EVP_MD *md = NULL; // use md5 hash!!
 
+
+
+#define MAX_LEN 4096
+
+int compute_file_hash(const char *path, EVP_MD_CTX *mdctx, unsigned char *md_value, unsigned int *md5_len) {
+    
+    FILE *fd = fopen(path, "rb");
+    
+    if (fd == NULL) {
+        fprintf(stderr, "%s::%d::Error opening file %d: %s\n", __func__, __LINE__, errno, path);
+	return -1; 
+    }
+    
+    char buff[MAX_LEN];
+    size_t n;
+    EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
+    while ((n = fread(buff, 1, MAX_LEN, fd))) {
+        EVP_DigestUpdate(mdctx, buff, n);
+    }
+    EVP_DigestFinal_ex(mdctx, md_value, md5_len);
+    EVP_MD_CTX_reset(mdctx);
+    fclose(fd);
+    return 0;
+}
+
+
 int main(int argc, char *argv[]) {
     // perform error handling, "exit" with failure incase an error occurs
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <directory_path>\n", argv[0]);
+        fprintf(stderr, "Usage: %s <directory>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
     if (nftw(argv[1], render_file_info, 20, FTW_PHYS) == -1) {
-        fprintf(stderr, "Error %d: %s is not a valid directory\n", ErrorNo, argv[1]);
+        fprintf(stderr, "Error %d: %s is not a valid directory\n", errno, argv[1]);
         exit(EXIT_FAILURE);
     }
     //printfiles();
